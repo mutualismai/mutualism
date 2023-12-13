@@ -25,6 +25,6 @@ def upgrade_to_gpt4(arena: Arena) -> None:
 if __name__ == '__main__':
     arena = Arena.from_config('config.json')
     log_react_agent_reasoning(arena)
-    # upgrade_to_gpt4(arena)
+    upgrade_to_gpt4(arena)
     arena.run(num_steps=10)
     arena.save_history('history.json')

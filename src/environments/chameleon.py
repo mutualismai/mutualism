@@ -3,8 +3,15 @@ import re
 from typing import Dict, List, Optional, Union
 
 from chatarena.agent import SIGNAL_END_OF_CONVERSATION
-from chatarena.environments import Environment, TimeStep
+from chatarena.backends import OpenAIChat
+from chatarena.environments import ENV_REGISTRY, Environment, TimeStep
 from chatarena.message import Message, MessagePool
+
+
+def register_environment(cls):
+    """Registers an environment with the environment registry."""
+    ENV_REGISTRY[cls.type_name] = cls
+    return cls
 
 DEFAULT_TOPIC_CODES = {
     "Fruits": [
@@ -49,7 +56,7 @@ DEFAULT_TOPIC_CODES = {
     ],
 }
 
-
+@register_environment
 class Chameleon(Environment):
     type_name = "chameleon"
 
@@ -67,6 +74,9 @@ class Chameleon(Environment):
 
         # The "state" of the environment is maintained by the message pool
         self.message_pool = MessagePool()
+
+        self.parser = OpenAIChat()
+        self.parser.temperature = 0.0
 
         # Randomly sample a topic, code and chameleon player
         self.topic = None
@@ -143,6 +153,11 @@ class Chameleon(Environment):
     def _text2vote(self, text) -> str:
         """Convert text to vote, return a player's name."""
         # lower = text.lower().replace("[", "").replace("]", "").replace(".", "")
+        text = self.parser._get_response([
+            {"role": "system", "content": 'You are a helpful assistant'},
+            {"role": "user", "content": f'Who did the speaker think the chameleon was? Or who did they vote for as the chameleon?\n{text}\nJust return the name of the player.'}
+            ])
+        
         text = text.lower()
         for name in self.player_names:
             candidates = [
@@ -158,24 +173,11 @@ class Chameleon(Environment):
         """Check whether the text is the true code."""
         # Get the word enclosed by quote marks with regex
         assert self.code
-        pattern = r"\"(.+?)\""
-        match = re.search(pattern, text)
-        if match:
-            return match.group(1).lower().replace(" ", "") == self.code.lower().replace(
-                " ", ""
-            )
-        else:
-            # if no quote marks, check whether the last k words match the code
-            words = text.split()
-            if len(words) >= len(self.code.split()):
-                guessed_term = (
-                    "".join(words[-len(self.code.split()) :]).lower().replace(".", "")
-                )
-                return guessed_term == self.code.lower().replace(" ", "").replace(
-                    ".", ""
-                )
-            else:
-                return False
+        text = self.parser._get_response([
+            {"role": "system", "content": 'You are a helpful assistant'},
+            {"role": "user", "content": f'Did the speaker guess the word {self.code} correctly? Here is what they guessed:\n{text}\nJust answer "correct" or "incorrect".'}
+            ])
+        return 'correct' in text.lower() and 'incorrect' not in text.lower()
 
     def _moderator_speak(self, text: str, visible_to: Union[str, List[str]] = "all"):
         """Moderator say something."""

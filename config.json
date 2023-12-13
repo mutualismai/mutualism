@@ -12,8 +12,9 @@
       "backend": {
         "backend_type": "react",
         "backend": {
-          "backend_type": "transformers:conversational",
-          "model": "SkunkworksAI/phi-2"
+          "backend_type": "openai-chat",
+          "temperature": 0.7,
+          "max_tokens": 300
         }
       }
     },
@@ -24,7 +25,7 @@
         "backend_type": "react",
         "backend": {
           "backend_type": "openai-chat",
-          "temperature": 1.0,
+          "temperature": 0.7,
           "max_tokens": 300
         }
       }
@@ -36,7 +37,7 @@
         "backend_type": "react",
         "backend": {
           "backend_type": "openai-chat",
-          "temperature": 1.0,
+          "temperature": 0.7,
           "max_tokens": 300
         }
       }
