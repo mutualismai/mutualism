@@ -36,7 +36,7 @@ class ImprovedModerationChameleon(Chameleon):
     def _is_true_code(self, text) -> bool:
         """Check whether the text is the true code."""
         # Get the word enclosed by quote marks with regex
-        assert self.code
-        text = self.parser(f'Did the speaker guess the word {self.code} correctly? Here is what they guessed:\n{text}\nJust answer "correct" or "incorrect".')
+        code: str = self.code # type: ignore
+        text = self.parser(f'Did the speaker guess the word {code} correctly? Here is what they guessed:\n{text}\nJust answer "correct" or "incorrect".')
         return 'correct' in text.lower() and 'incorrect' not in text.lower()
 

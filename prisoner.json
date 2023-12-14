@@ -1,0 +1,58 @@
+{
+    "name": "Iterative Three-Player Prisoners' Dilemma",
+    "global_prompt": "You are playing the Iterative Three-Player Prisoners' Dilemma game. Players 1, 2, and 3 are involved in a crime and are interrogated separately. They can either choose to betray the others (Defect, D) or cooperate with them (Cooperate, C). The rewards and penalties are distributed based on the combination of choices made by the three players.",
+    "environment": {
+      "env_type": "prisoner",
+      "rounds": 2,
+      "payouts": {
+        "cooperate": {
+            "2_others_cooperate": 5,
+            "1_others_cooperate": 3,
+            "0_others_cooperate": 0
+        },
+        "defect": {
+            "2_others_cooperate": 9,
+            "1_others_cooperate": 7,
+            "0_others_cooperate": 1
+        }
+        }
+    },
+    "players": [
+      {
+        "name": "Player 1",
+        "role_desc": "You play as Player 1. Your task is to choose to either betray the others (Defect, D) or cooperate with them (Cooperate, C) in each round. For example, you can output: \"Defect.\" The choice you make must be consistent with the game rules.",
+        "backend": {
+            "backend_type": "react",
+            "backend": {
+                "backend_type": "openai-chat",
+                "temperature": 0,
+                "max_tokens": 300
+            }
+        }
+      },
+      {
+        "name": "Player 2",
+        "role_desc": "You play as Player 2. Your task is to choose to either betray the others (Defect, D) or cooperate with them (Cooperate, C) in each round. For example, you can output: \"Cooperate.\" The choice you make must be consistent with the game rules.",
+        "backend": {
+            "backend_type": "react",
+            "backend": {
+                "backend_type": "openai-chat",
+                "temperature": 0,
+                "max_tokens": 300
+            }
+        }
+      },
+      {
+        "name": "Player 3",
+        "role_desc": "You play as Player 3. Your task is to choose to either betray the others (Defect, D) or cooperate with them (Cooperate, C) in each round. For example, you can output: \"Cooperate.\" The choice you make must be consistent with the game rules.",
+        "backend": {
+            "backend_type": "react",
+            "backend": {
+                "backend_type": "openai-chat",
+                "temperature": 0,
+                "max_tokens": 300
+            }
+        }
+      }
+    ]
+  }

@@ -2,7 +2,6 @@ import logging
 
 from chatarena.arena import Arena
 from chatarena.backends.openai import OpenAIChat
-
 from src.agents.react import ReActWrapper
 
 logging.basicConfig(level=logging.INFO)
@@ -23,8 +22,8 @@ def upgrade_to_gpt4(arena: Arena) -> None:
             backend.model = 'gpt-4-1106-preview'
 
 if __name__ == '__main__':
-    arena = Arena.from_config('config.json')
+    arena = Arena.from_config('prisoner.json')
     log_react_agent_reasoning(arena)
-    # upgrade_to_gpt4(arena)
-    arena.run(num_steps=10)
+    upgrade_to_gpt4(arena)
+    arena.run(num_steps=50)
     arena.save_history('history.json')
