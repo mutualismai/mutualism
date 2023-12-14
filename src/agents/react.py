@@ -1,20 +1,14 @@
-import copy
 from typing import List, Optional
 
-from chatarena.backends import (BACKEND_REGISTRY, IntelligenceBackend,
-                                load_backend)
+from chatarena.backends import (IntelligenceBackend, load_backend,
+                                register_backend)
 from chatarena.config import BackendConfig
 from chatarena.message import SYSTEM_NAME, Message
 
 REASONING_PROMPT = "Before reponding to the previous message, first think step-by-step about your response. Give only your reasoning, not the response itself."
 
-def register_intelligence_backend(cls):
-    """Registers an intelligence backend with the backend registry."""
-    BACKEND_REGISTRY[cls.type_name] = cls
-    return cls
 
-
-@register_intelligence_backend
+@register_backend
 class ReActWrapper(IntelligenceBackend):
     type_name = 'react'
     stateful = False
