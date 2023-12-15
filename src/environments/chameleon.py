@@ -1,7 +1,6 @@
-from chatarena.backends import OpenAIChat
 from chatarena.environments import Chameleon, register_env
 
-from .parser import Parser
+from .base import Parser
 
 
 @register_env

@@ -1,9 +1,22 @@
 from abc import abstractmethod
-from typing import Dict, List, Type, Union
+from typing import Any, Dict, List, Type, Union
 
+from chatarena.backends import OpenAIChat
 from chatarena.environments import Environment
 from chatarena.environments.base import TimeStep
 from chatarena.message import Message, MessagePool
+
+
+class Parser:
+    def __init__(self) -> None:
+        self.backend = OpenAIChat(temperature=0.0)
+
+    def __call__(self, prompt: str) -> Any:
+        messages = [
+            {"role": "system", "content": 'You are a helpful assistant'},
+            {"role": "user", "content": prompt}
+            ]
+        return self.backend._get_response(messages) # type: ignore
 
 
 class Round:

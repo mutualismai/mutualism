@@ -3,8 +3,7 @@ from typing import Dict, List
 
 from chatarena.environments import register_env
 
-from .parser import Parser
-from .simple_round_game import Round, SimpleRoundEnvironment
+from .base import Parser, Round, SimpleRoundEnvironment
 
 
 def players_cooperated(round: Round) -> Dict[str, bool]:

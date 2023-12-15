@@ -2,8 +2,7 @@ from typing import Dict, List
 
 from chatarena.environments import register_env
 
-from .parser import Parser
-from .simple_round_game import SimpleRoundEnvironment
+from .base import Parser, SimpleRoundEnvironment
 
 
 def calculate_contributions(player_actions: Dict[str, str]) -> Dict[str, float]:
