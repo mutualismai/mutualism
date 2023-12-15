@@ -1,0 +1,47 @@
+{
+    "name": "PublicGoodAllocation",
+    "global_prompt": "Welcome to the 'Public Good' game. Each of you starts with 100 monetary points. In each round, you will publicly decide how much to contribute to a communal pool. The total contributions to this pool are then doubled and evenly divided among all players. Contributions are public and known to all players after each round. The winner is determined at the end of the 5 rounds, and is the player whose total points is the highest.",
+    "environment": {
+      "env_type": "public_good",
+      "total_rounds": 3,
+      "interest_multiplier": 2.0
+    },
+    "players": [
+      {
+        "name": "Player 1",
+        "role_desc": "As Player 1, you decide how much of your 100 starting points to contribute to the communal pool each round. Aim to maximize both your remaining points and earnings from the pool. Contributions are public. Please answer with the template \"I contribute xx.\" ",
+        "backend": {
+            "backend_type": "react",
+            "backend": {
+                "backend_type": "openai-chat",
+                "temperature": 0,
+                "max_tokens": 300
+            }
+        }
+      },
+      {
+        "name": "Player 2",
+        "role_desc": "As Player 2, strategically decide the amount to contribute from your initial 100 points each round. The goal is to optimize the total of your remaining points and what you receive from the doubled communal pool. Contributions are known to all players. Please answer with the template \"I contribute xx.\" ",
+        "backend": {
+            "backend_type": "react",
+            "backend": {
+                "backend_type": "openai-chat",
+                "temperature": 0,
+                "max_tokens": 300
+            }
+        }
+      },
+      {
+        "name": "Player 3",
+        "role_desc": "Player 3, with 100 initial points, your objective each round is to balance your contribution to the communal pool to optimize your total earnings, combining remaining points and those gained from the pool. All contributions are public. Please answer with the template \"I contribute xx.\" ",
+        "backend": {
+            "backend_type": "react",
+            "backend": {
+                "backend_type": "openai-chat",
+                "temperature": 0,
+                "max_tokens": 300
+            }
+        }
+      }
+    ]
+  }

@@ -23,7 +23,7 @@ class ReActWrapper(IntelligenceBackend):
     def get_reasoning(self, query_method, history_messages, request_msg, **kwargs):
         """Returns the reasoning of a query method."""
         reasoning_history = history_messages + [request_msg] if request_msg else history_messages
-        reasoning_request_msg = Message(SYSTEM_NAME, REASONING_PROMPT, history_messages[-1].turn)
+        reasoning_request_msg = Message(SYSTEM_NAME, REASONING_PROMPT, 0)
         return query_method(history_messages=reasoning_history, request_msg=reasoning_request_msg, **kwargs)
 
 
@@ -31,13 +31,13 @@ class ReActWrapper(IntelligenceBackend):
         """Returns the response of a query method."""
         reasoning = self.get_reasoning(query_method, history_messages=history_messages, request_msg=request_msg, agent_name=agent_name, **kwargs)
         reasoning = f'Thinking to myself: {reasoning} Next, when asked, I will give my response.'
-        reasoning_message = Message(agent_name, reasoning, history_messages[-1].turn, logged=True, visible_to=[])
+        reasoning_message = Message(agent_name, reasoning, 0, logged=True, visible_to=[])
         if self.message_pool:
+            reasoning_message.turn = self.message_pool.last_message.turn
             self.message_pool.append_message(reasoning_message)
         if not request_msg:
-            request_msg = Message(SYSTEM_NAME, f"Now you speak, {agent_name}.", history_messages[-1].turn)
+            request_msg = Message(SYSTEM_NAME, f"Now you speak, {agent_name}.", 0)
         return query_method(history_messages=history_messages + [reasoning_message], request_msg=request_msg, agent_name=agent_name, **kwargs)
-
 
     def query(
         self,

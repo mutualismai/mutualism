@@ -3,7 +3,7 @@
     "global_prompt": "You are playing the Iterative Three-Player Prisoners' Dilemma game. Players 1, 2, and 3 are involved in a crime and are interrogated separately. They can either choose to betray the others (Defect, D) or cooperate with them (Cooperate, C). The rewards and penalties are distributed based on the combination of choices made by the three players.",
     "environment": {
       "env_type": "prisoner",
-      "rounds": 2,
+      "total_rounds": 2,
       "payouts": {
         "cooperate": {
             "2_others_cooperate": 5,
