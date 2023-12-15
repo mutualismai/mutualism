@@ -22,8 +22,8 @@ def upgrade_to_gpt4(arena: Arena) -> None:
             backend.model = 'gpt-4-1106-preview'
 
 if __name__ == '__main__':
-    arena = Arena.from_config('game_configs/public_good.json')
+    arena = Arena.from_config('game_configs/once_upon_a_time.json')
     log_react_agent_reasoning(arena)
-    upgrade_to_gpt4(arena)
-    arena.run(num_steps=50)
+    # upgrade_to_gpt4(arena)
+    arena.run(num_steps=25)
     arena.save_history('history.json')
