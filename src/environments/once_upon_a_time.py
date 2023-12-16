@@ -1,4 +1,5 @@
 import random
+import re
 from dataclasses import dataclass
 from enum import Enum
 from typing import List, Optional, Union
@@ -230,42 +231,32 @@ class ActionType(Enum):
 
 
 def parse_action(action: str) -> Optional[ActionType]:
-    if action.lower().startswith('interruption'):
+    if action.startswith('INTERRUPTION'):
         return ActionType.INTERRUPT
-    if action.lower().startswith('pass'):
+    if action.startswith('PASS'):
         return ActionType.PASS
-    if action.lower().startswith('challenge'):
+    if action.startswith('CHALLENGE'):
         return ActionType.CHALLENGE
-    parser = Parser()
-    action_type = parser(f'Which category does this action belong to?\n>{action}\nSay only "tell story", "pass", "interrupt", or "challenge".')
-    if "tell story" in action_type.lower():
-        return ActionType.TELL_STORY
-    elif "pass" in action_type.lower():
-        return ActionType.PASS
-    elif "interrupt" in action_type.lower():
-        return ActionType.INTERRUPT
-    elif "challenge" in action_type.lower():
-        return ActionType.CHALLENGE
-    return None
+    return ActionType.TELL_STORY
 
 def cards_used(action, cards) -> List[Card]:
-    parser = Parser()
-    cards_used_answer = parser(f'Which of the following story elements appeared in this paragraph?\nStory Elements: {cards}\nParagraph: {action}\nSay only the card text, separated by commas.')
-    return [card for card in cards if card.text.lower() in cards_used_answer.lower()]
+    story_elements = [e.lower() for e in re.findall(r'<b>(.*?)</b>', action)]
+    return [card for card in cards if card.text.lower() in story_elements]
 
 def used_ending(action, ending) -> bool:
-    if action.lower().endswith(ending.lower()):
-        return True
-    parser = Parser()
-    used_ending_answer = parser(f'Did the following paragraph contain the provided ending?\n>Ending: {ending}\nParagraph: {action}\nSay only "yes" or "no".')
-    return "yes" in used_ending_answer.lower()
+    return action.lower().endswith(ending.lower())
 
 def valid_interrupt_card(action, cards, previous_story, previously_used_cards) -> Optional[Card]:
+    story_elements = [e.lower() for e in re.findall(r'<b>(.*?)</b>', action)]
+    story_elements = [e for e in story_elements if e in [c.text.lower() for c in cards]]
+    if not story_elements:
+        return None
+    interrupting_card_text = story_elements[0]
+    interrupting_card = [c for c in cards if c.text.lower() == interrupting_card_text.lower()][0]
     parser = Parser()
-    interrupt_answer = parser(f'There are two ways to validly interrupt a story:\n1. By using an interrupt card, and replacing a previously used element with the new card element, on an interrupt card.\n2. By using a story element that was mentioned in the story. This does not necessarily need to be an interrupt card.\nWas this a valid interruption?\nStory: {previous_story}\nUsed Elements: {previously_used_cards}\nStory Elements Available To Use as Interruption: {[c for c in cards]}\nAttempted Interruption: {action}\nSay only the card text of the card used as an interuption. If the interuption was invalid, say invalid.')
-    for card in cards:
-        if card.text.lower() in interrupt_answer.lower():
-            return card
+    interrupt_answer = parser(f"There are two ways to interrupt:\n1. By using an interrupt card from your hand, and replacing a recently used story element with the new story element, and continuing the story from there. For example if someone uses the horse story element and you have the dragon interrupt card, you can say 'INTERRUPTION: No, it wasn't a horse, but a <b>dragon</b>, and the dragon...'\n2. By using a anything that was mentioned in the story, that appears on one of the cards in your hand (not necessarily an interrupt card). For example, if you have the house card and the storyteller mentioned a house, you can say: 'INTERRUPTION: You said house! It was in the <b>house</b> that...'\n\nWas this a valid interruption?\nStory: {previous_story}\nElements in Story: {previously_used_cards}\nInterrupting Card: {interrupting_card}\nAttempted Interruption: {action}\nSay only yes or no.")
+    if 'yes' in interrupt_answer.lower():
+        return interrupting_card
     return None
 
 class GameMode(Enum):
@@ -334,6 +325,7 @@ class OnceUponATime(Environment):
         storyteller_hand = self.hands[player_name]
         self.moderator_speaks(f"Storyteller: {self.storyteller_name}; {storyteller_hand}", visible_to='Moderator')
         if action_type != ActionType.TELL_STORY:
+            self.message_pool.append_message(Message(player_name, action, self.message_pool.last_turn + 1, visible_to='moderator'))
             self.moderator_speaks(f"{player_name} couldn't continue the story.")
             self.pass_storyteller()
             return TimeStep(self.get_observation(), self.get_zero_rewards(), self.is_terminal())
